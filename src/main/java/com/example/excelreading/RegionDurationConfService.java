@@ -29,14 +29,10 @@ public class RegionDurationConfService {
 
         int sheets = workbook.getNumberOfSheets();
 
-//        for (int i = 0; i < sheets; i++) {
-//            Sheet sheet = workbook.getSheetAt(i);
-//            processSheet(sheet);
-//        }
-
-        Sheet sheet = workbook.getSheetAt(2);
-        processSheet(sheet);
-
+        for (int i = 0; i < sheets; i++) {
+            Sheet sheet = workbook.getSheetAt(i);
+            processSheet(sheet);
+        }
 
         workbook.close();
 
