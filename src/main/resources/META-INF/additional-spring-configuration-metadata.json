@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "equipment.speeds.manualWheelchair",
+      "type": "java.lang.String",
+      "description": "Manual wheel chair speed(m/s)."
+    },
+    {
+      "name": "equipment.speeds.electricWheelchair",
+      "type": "java.lang.String",
+      "description": "Electric wheel chair speed(m/s)."
+    {
+      "name": "equipment.speeds.golfCart",
+      "type": "java.lang.String",
+      "description": "Golf cart speed(m/s)."
+    },
+    {
+      "name": "equipment.speeds.ambulift",
+      "type": "java.lang.String",
+      "description": "Ambulift speed(m/s)."
+    }
+  ]
+}
