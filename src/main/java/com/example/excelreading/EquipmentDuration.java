@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EquipmentDuration {
     private String equipment;
-    private double duration;
+    private int duration;
 
 }

@@ -2,12 +2,10 @@ package com.example.excelreading;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,9 +23,26 @@ public class RegionDurationConfService {
         this.repository = repository;
     }
 
+    @Transactional
     public void processExcelFile(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
-        Sheet sheet = workbook.getSheetAt(0);
+
+        int sheets = workbook.getNumberOfSheets();
+
+//        for (int i = 0; i < sheets; i++) {
+//            Sheet sheet = workbook.getSheetAt(i);
+//            processSheet(sheet);
+//        }
+
+        Sheet sheet = workbook.getSheetAt(2);
+        processSheet(sheet);
+
+
+        workbook.close();
+
+    }
+
+    private void processSheet(Sheet sheet) {
 
         List<RegionDurationConf> records = new ArrayList<>();
 
@@ -38,13 +53,26 @@ public class RegionDurationConfService {
 
             Cell fromRegionCell = row.getCell(0);
             if (fromRegionCell == null) continue;
-            String fromRegion = fromRegionCell.getStringCellValue();
+
+            String fromRegion = "";
+            if (fromRegionCell.getCellType() == CellType.STRING) {
+                fromRegion = fromRegionCell.getStringCellValue().trim();
+            } else if (fromRegionCell.getCellType() == CellType.NUMERIC) {
+                fromRegion = String.valueOf((int) fromRegionCell.getNumericCellValue()).trim();
+            }
 
             for (int j = 1; j < row.getPhysicalNumberOfCells(); j++) {
 
                 Cell cell = row.getCell(j);
                 if (cell == null) continue;
-                String toRegion = headerRow.getCell(j).getStringCellValue();
+                String toRegion = "";
+
+                if (headerRow.getCell(j).getCellType() == CellType.STRING) {
+                    toRegion = headerRow.getCell(j).getStringCellValue().trim();
+                } else if (headerRow.getCell(j).getCellType() == CellType.NUMERIC) {
+                    toRegion = String.valueOf((int) headerRow.getCell(j).getNumericCellValue()).trim();
+                }
+
                 double distance = 0;
                 try {
                     distance = row.getCell(j).getNumericCellValue();
@@ -55,9 +83,7 @@ public class RegionDurationConfService {
                 records.add(createRegionDurationConf(fromRegion, toRegion, equipmentConfJson));
             }
         }
-
         repository.saveAll(records);
-        workbook.close();
     }
 
     private RegionDurationConf createRegionDurationConf(String from, String to, String equipmentConf) {
@@ -72,7 +98,7 @@ public class RegionDurationConfService {
         Map<String, EquipmentDuration> equipmentDurations = new HashMap<>();
 
         for (Equipment equipment : Equipment.values()) {
-            double duration = distance / equipment.getSpeed();
+            int duration =(int) Math.ceil(distance / equipment.getSpeed() / 60);
             equipmentDurations.put(equipment.getName(), new EquipmentDuration(equipment.getName(), duration));
         }
 
