@@ -17,4 +17,6 @@ public class RegionDurationConf {
 
     @Column(columnDefinition = "json")
     private String equipmentConf;
+
+    private String direction;
 }

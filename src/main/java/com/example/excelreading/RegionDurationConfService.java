@@ -26,14 +26,8 @@ public class RegionDurationConfService {
     @Transactional
     public void processExcelFile(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
-
-        int sheets = workbook.getNumberOfSheets();
-
-        for (int i = 0; i < sheets; i++) {
-            Sheet sheet = workbook.getSheetAt(i);
-            processSheet(sheet);
-        }
-
+        Sheet sheet = workbook.getSheetAt(0);
+        processSheet(sheet);
         workbook.close();
 
     }
@@ -87,6 +81,7 @@ public class RegionDurationConfService {
         conf.setFromRegion(from);
         conf.setToRegion(to);
         conf.setEquipmentConf(equipmentConf);
+        conf.setDirection("DEPARTURE");
         return conf;
     }
 
